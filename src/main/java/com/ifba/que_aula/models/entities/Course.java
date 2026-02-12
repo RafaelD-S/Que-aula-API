@@ -6,6 +6,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinColumns;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -20,7 +21,10 @@ public class Course {
     private Long idCourse;
 
     @ManyToOne
-    @JoinColumn(name = "fk_code_section", nullable = false)
+    @JoinColumns({
+        @JoinColumn(name = "fk_code_section", referencedColumnName = "code", nullable = false),
+        @JoinColumn(name = "fk_code_subject", referencedColumnName = "fk_code_subject", nullable = false)
+    })
     private Section section;
 
     @Column(nullable = false)
@@ -30,19 +34,30 @@ public class Course {
     private String classroom;
 
     @Column(nullable = false)
-    private String weekday;
+    private int weekday;
 
-    @Column(nullable = false)
-    private String period;
+    @Column(name = "period_start", nullable = false)
+    private int periodStart;
+
+    @Column(name = "period_end", nullable = false)
+    private int periodEnd;
 
     public Course() {}
 
-    public Course(Section section, String teacher, String classroom, String weekday, String period) {
+    public Course(
+            Section section,
+            String teacher,
+            String classroom,
+            int weekday,
+            int periodStart,
+            int periodEnd
+    ) {
         this.section = section;
         this.teacher = teacher;
         this.classroom = classroom;
         this.weekday = weekday;
-        this.period = period;
+        this.periodStart = periodStart;
+        this.periodEnd = periodEnd;
     }
 
     public Long getIdCourse() { return idCourse; }
@@ -57,9 +72,12 @@ public class Course {
     public String getClassroom() { return classroom; }
     public void setClassroom(String classroom) { this.classroom = classroom; }
 
-    public String getWeekday() { return weekday; }
-    public void setWeekday(String weekday) { this.weekday = weekday; }
+    public int getWeekday() { return weekday; }
+    public void setWeekday(int weekday) { this.weekday = weekday; }
 
-    public String getPeriod() { return period; }
-    public void setPeriod(String period) { this.period = period; }
+    public int getPeriodStart() { return periodStart; }
+    public void setPeriodStart(int periodStart) { this.periodStart = periodStart; }
+
+    public int getPeriodEnd() { return periodEnd; }
+    public void setPeriodEnd(int periodEnd) { this.periodEnd = periodEnd; }
 }

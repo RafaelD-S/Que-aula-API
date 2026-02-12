@@ -41,17 +41,19 @@ public class SectionController {
                         .map(course -> new CourseResponseDTO (
                             course.getIdCourse(),
                             course.getSection().getCode(),
+                            course.getSection().getSubject().getCode(),
                             course.getTeacher(),
                             course.getClassroom(),
                             course.getWeekday(),
-                            course.getPeriod()
+                            course.getPeriodStart(),
+                            course.getPeriodEnd()
                         )).toList()
                 )).toList();
     }
 
-    @GetMapping("/{code}")
-    public SectionResponseDTO getById(@PathVariable String code) {
-        Section s = service.findById(code);
+    @GetMapping("/{subjectCode}/{code}")
+    public SectionResponseDTO getById(@PathVariable String subjectCode, @PathVariable String code) {
+        Section s = service.findById(code, subjectCode);
         return new SectionResponseDTO(
             s.getCode(),
             s.getIsStrike(),
@@ -70,14 +72,18 @@ public class SectionController {
         );
     }
 
-    @PutMapping("/{code}")
-    public Section update(@PathVariable String code, @Valid @RequestBody SectionDTO dto) {
+    @PutMapping("/{subjectCode}/{code}")
+    public Section update(
+            @PathVariable String subjectCode,
+            @PathVariable String code,
+            @Valid @RequestBody SectionDTO dto
+    ) {
         Section section = new Section(dto.getCode(), dto.getIsStrike(), null);
-        return service.update(code, section, dto.getSubjectCode());
+        return service.update(code, subjectCode, section, dto.getSubjectCode());
     }
 
-    @DeleteMapping("/{code}")
-    public void delete(@PathVariable String code) {
-        service.delete(code);
+    @DeleteMapping("/{subjectCode}/{code}")
+    public void delete(@PathVariable String subjectCode, @PathVariable String code) {
+        service.delete(code, subjectCode);
     }
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.ifba.que_aula.exception.ResourceNotFoundException;
 import com.ifba.que_aula.models.entities.Section;
+import com.ifba.que_aula.models.entities.SectionId;
 import com.ifba.que_aula.models.entities.Subject;
 import com.ifba.que_aula.repository.SectionRepository;
 import com.ifba.que_aula.repository.SubjectRepository;
@@ -25,9 +26,12 @@ public class SectionService {
         return sectionRepository.findAll();
     }
 
-    public Section findById(String code) {
-        return sectionRepository.findById(code)
-                .orElseThrow(() -> new ResourceNotFoundException("Section não encontrada: " + code));
+        public Section findById(String code, String subjectCode) {
+        SectionId id = new SectionId(code, subjectCode);
+        return sectionRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "Section não encontrada: " + code + " / " + subjectCode
+            ));
     }
 
     public Section create(Section section, String subjectCode) {
@@ -37,17 +41,17 @@ public class SectionService {
         return sectionRepository.save(section);
     }
 
-    public Section update(String code, Section sectionDetails, String subjectCode) {
-        Section section = findById(code);
+    public Section update(String code, String subjectCode, Section sectionDetails, String newSubjectCode) {
+        Section section = findById(code, subjectCode);
         section.setIsStrike(sectionDetails.getIsStrike());
-        Subject subject = subjectRepository.findById(subjectCode)
-                .orElseThrow(() -> new ResourceNotFoundException("Subject não encontrado: " + subjectCode));
+        Subject subject = subjectRepository.findById(newSubjectCode)
+                .orElseThrow(() -> new ResourceNotFoundException("Subject não encontrado: " + newSubjectCode));
         section.setSubject(subject);
         return sectionRepository.save(section);
     }
 
-    public void delete(String code) {
-        Section section = findById(code);
+    public void delete(String code, String subjectCode) {
+        Section section = findById(code, subjectCode);
         sectionRepository.delete(section);
     }
 }

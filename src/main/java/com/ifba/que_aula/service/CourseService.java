@@ -1,13 +1,15 @@
 package com.ifba.que_aula.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.ifba.que_aula.exception.ResourceNotFoundException;
 import com.ifba.que_aula.models.entities.Course;
 import com.ifba.que_aula.models.entities.Section;
+import com.ifba.que_aula.models.entities.SectionId;
 import com.ifba.que_aula.repository.CourseRepository;
 import com.ifba.que_aula.repository.SectionRepository;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class CourseService {
@@ -29,23 +31,30 @@ public class CourseService {
                 .orElseThrow(() -> new ResourceNotFoundException("Course não encontrado: " + id));
     }
 
-    public Course create(Course course, String sectionCode) {
-        Section section = sectionRepository.findById(sectionCode)
-                .orElseThrow(() -> new ResourceNotFoundException("Section não encontrada: " + sectionCode));
+        public Course create(Course course, String sectionCode, String subjectCode) {
+        SectionId id = new SectionId(sectionCode, subjectCode);
+        Section section = sectionRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "Section não encontrada: " + sectionCode + " / " + subjectCode
+            ));
         course.setSection(section);
         return courseRepository.save(course);
     }
 
-    public Course update(Long id, Course courseDetails, String sectionCode) {
+        public Course update(Long id, Course courseDetails, String sectionCode, String subjectCode) {
         Course course = findById(id);
-        Section section = sectionRepository.findById(sectionCode)
-                .orElseThrow(() -> new ResourceNotFoundException("Section não encontrada: " + sectionCode));
+        SectionId sectionId = new SectionId(sectionCode, subjectCode);
+        Section section = sectionRepository.findById(sectionId)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                "Section não encontrada: " + sectionCode + " / " + subjectCode
+            ));
 
         course.setSection(section);
         course.setTeacher(courseDetails.getTeacher());
         course.setClassroom(courseDetails.getClassroom());
         course.setWeekday(courseDetails.getWeekday());
-        course.setPeriod(courseDetails.getPeriod());
+        course.setPeriodStart(courseDetails.getPeriodStart());
+        course.setPeriodEnd(courseDetails.getPeriodEnd());
 
         return courseRepository.save(course);
     }

@@ -35,10 +35,12 @@ public class CourseController {
             .map(s -> new CourseResponseDTO (
                 s.getIdCourse(),
                 s.getSection().getCode(),
+                s.getSection().getSubject().getCode(),
                 s.getTeacher(),
                 s.getClassroom(),
                 s.getWeekday(),
-                s.getPeriod()
+                s.getPeriodStart(),
+                s.getPeriodEnd()
         )).toList();
     }
 
@@ -53,11 +55,12 @@ public class CourseController {
                 null,
                 dto.getTeacher(),
                 dto.getClassroom(),
-                dto.getWeekday(),
-                dto.getPeriod()
+            dto.getWeekday(),
+            dto.getPeriodStart(),
+            dto.getPeriodEnd()
         );
 
-        return service.create(course, dto.getSectionCode());
+        return service.create(course, dto.getSectionCode(), dto.getSubjectCode());
     }
 
     @PutMapping("/{id}")
@@ -67,11 +70,12 @@ public class CourseController {
                 null,
                 dto.getTeacher(),
                 dto.getClassroom(),
-                dto.getWeekday(),
-                dto.getPeriod()
+            dto.getWeekday(),
+            dto.getPeriodStart(),
+            dto.getPeriodEnd()
         );
 
-        return service.update(id, course, dto.getSectionCode());
+        return service.update(id, course, dto.getSectionCode(), dto.getSubjectCode());
     }
 
     @DeleteMapping("/{id}")
