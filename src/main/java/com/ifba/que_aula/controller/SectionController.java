@@ -52,12 +52,24 @@ public class SectionController {
     }
 
     @GetMapping("/{subjectCode}/{code}")
-    public SectionResponseDTO getById(@PathVariable String subjectCode, @PathVariable String code) {
+    public SectionFullDTO getById(@PathVariable String subjectCode, @PathVariable String code) {
         Section s = service.findById(code, subjectCode);
-        return new SectionResponseDTO(
+        return new SectionFullDTO(
             s.getCode(),
             s.getIsStrike(),
-            s.getSubject().getCode()
+            s.getSubject().getCode(),
+            s.getCourses().stream()
+                .map(course -> new CourseResponseDTO(
+                    course.getIdCourse(),
+                    course.getSection().getCode(),
+                    course.getSection().getSubject().getCode(),
+                    course.getTeacher(),
+                    course.getClassroom(),
+                    course.getWeekday(),
+                    course.getPeriodStart(),
+                    course.getPeriodEnd()
+                ))
+                .toList()
         );
     }
 
