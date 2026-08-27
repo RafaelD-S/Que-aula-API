@@ -72,9 +72,23 @@ public class SubjectController {
     }
 
     @PutMapping("/{code}")
-    public Subject update(@PathVariable String code, @Valid @RequestBody SubjectDTO dto) {
-        Subject subject = new Subject(dto.getCode(), dto.getName(), dto.getSemester());
-        return service.update(code, subject);
+    public SubjectResponseDTO update(
+            @PathVariable String code,
+            @Valid @RequestBody SubjectDTO dto
+    ) {
+        Subject subject = new Subject(
+                dto.getCode(),
+                dto.getName(),
+                dto.getSemester()
+        );
+
+        Subject updated = service.update(code, subject);
+
+        return new SubjectResponseDTO(
+                updated.getCode(),
+                updated.getName(),
+                updated.getSemester()
+        );
     }
 
     @DeleteMapping("/{code}")
@@ -86,33 +100,33 @@ public class SubjectController {
         return new SubjectResponseDTO(subject.getCode(), subject.getName(), subject.getSemester());
     }
 
-        private SubjectFullDTO toFullDTO(Subject subject, boolean includeCourses) {
+    private SubjectFullDTO toFullDTO(Subject subject, boolean includeCourses) {
         List<SectionFullDTO> sections = subject.getSections() == null
-            ? List.of()
-            : subject.getSections().stream()
-                .map(section -> new SectionFullDTO(
-                    section.getCode(),
-                    section.getIsStrike(),
-                    section.getSubject() != null ? section.getSubject().getCode() : null,
-                    includeCourses && section.getCourses() != null
+                ? List.of()
+                : subject.getSections().stream()
+                        .map(section -> new SectionFullDTO(
+                        section.getCode(),
+                        section.getIsStrike(),
+                        section.getSubject() != null ? section.getSubject().getCode() : null,
+                        includeCourses && section.getCourses() != null
                         ? section.getCourses().stream()
-                            .map(course -> new CourseResponseDTO(
+                                .map(course -> new CourseResponseDTO(
                                 course.getIdCourse(),
                                 course.getSection() != null ? course.getSection().getCode() : null,
                                 (course.getSection() != null && course.getSection().getSubject() != null)
-                                    ? course.getSection().getSubject().getCode()
-                                    : null,
+                                ? course.getSection().getSubject().getCode()
+                                : null,
                                 course.getTeacher(),
                                 course.getClassroom(),
                                 course.getWeekday(),
                                 course.getPeriodStart(),
                                 course.getPeriodEnd()
-                            ))
-                            .toList()
+                        ))
+                                .toList()
                         : List.of()
                 ))
-                .toList();
+                        .toList();
 
         return new SubjectFullDTO(subject.getCode(), subject.getName(), subject.getSemester(), sections);
-        }
+    }
 }
