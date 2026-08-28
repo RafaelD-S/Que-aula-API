@@ -72,23 +72,9 @@ public class SubjectController {
     }
 
     @PutMapping("/{code}")
-    public SubjectResponseDTO update(
-            @PathVariable String code,
-            @Valid @RequestBody SubjectDTO dto
-    ) {
-        Subject subject = new Subject(
-                dto.getCode(),
-                dto.getName(),
-                dto.getSemester()
-        );
-
-        Subject updated = service.update(code, subject);
-
-        return new SubjectResponseDTO(
-                updated.getCode(),
-                updated.getName(),
-                updated.getSemester()
-        );
+    public Subject update(@PathVariable String code, @Valid @RequestBody SubjectDTO dto) {
+        Subject subject = new Subject(dto.getCode(), dto.getName(), dto.getSemester());
+        return service.update(code, subject);
     }
 
     @DeleteMapping("/{code}")
